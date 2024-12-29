@@ -7,6 +7,14 @@ import swaggerUI from 'swagger-ui-express';
 
 import { config } from './config/config';
 import { swaggerSetup } from './lib/swagger';
+import authRouter from './routes/auth.router';
+import cookieParser from 'cookie-parser';
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user: { id: string; role: string };
+  }
+}
 
 const app = express();
 dotenv.config();
@@ -19,11 +27,14 @@ app.use(
   })
 );
 app.use(helmet());
+app.use(cookieParser());
 
 app.use('/health', (req, res) => {
   res.send('OK');
 });
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSetup));
+
+app.use('/api/v1/auth', authRouter);
 
 export const runApp = () => {
   app.listen(config.port, () => {
