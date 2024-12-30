@@ -8,7 +8,8 @@
     "prepare": "husky",
     "dev": "nodemon ./src/index.ts",
     "lint": "eslint ./src/**/*.{js,ts} --fix",
-    "format": "prettier --write ./src/**/*.{js,ts}"
+    "format": "prettier --write ./src/**/*.{js,ts}",
+    "seed": "ts-node ./src/seed/seed.ts"
   },
   "author": "sapthaka morahela",
   "license": "ISC",
