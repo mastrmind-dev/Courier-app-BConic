@@ -69,13 +69,13 @@ const LoginPage = () => {
 
   return (
     <MainLayout>
-      <div className="flex w-full my-[50px] items-center justify-center">
+      <div className="flex w-[100vw] my-[50px] items-center justify-center">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-5 p-5 border rounded-lg shadow-lg w-[400px] border-[#081470] border-2"
+            className="space-y-5 p-5 border rounded-lg shadow-2xl w-[400px] border-[#081470] border-2"
           >
-            <p className="font-bold text-[20px] flex justify-center">Login</p>
+            <p className="font-bold text-[20px] flex justify-center text-[#081470]">Login</p>
             <hr className="border-[#081470] w-[100px] m-auto" />
             {formFields.map((field) => (
               <FormField

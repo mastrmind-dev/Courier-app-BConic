@@ -84,10 +84,7 @@ const SignUpPage = () => {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values);
   }
 
@@ -135,13 +132,13 @@ const SignUpPage = () => {
 
   return (
     <MainLayout>
-      <div className="flex w-full my-[50px] items-center justify-center">
+      <div className="flex w-[100vw] my-[50px] items-center justify-center">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-5 p-5 border rounded-lg shadow-lg w-[400px] border-[#081470] border-2"
+            className="space-y-5 p-5 border rounded-lg shadow-2xl w-[400px] border-[#081470] border-2 fixed h-[75vh] overflow-y-scroll scrollbar-thin top-28"
           >
-            <p className="font-bold text-[20px] flex justify-center">Sign Up</p>
+            <p className="font-bold text-[20px] text-[#081470] flex justify-center">Sign Up</p>
             <hr className="border-[#081470] w-[100px] m-auto" />
             {formFields.map((field) => (
               <FormField

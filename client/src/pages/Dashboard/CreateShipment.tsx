@@ -143,7 +143,7 @@ const CreateShipment = () => {
 
   return (
     <div className="flex flex-col w-full my-[20px] ml-[10px] justify-center">
-      <p className="font-bold text-[20px] ml-[20px]">Create Shipment</p>
+      <p className="font-bold text-[20px] ml-[20px] text-[#081470]">Create Shipment</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="gap-5 p-5 w-full flex flex-wrap">

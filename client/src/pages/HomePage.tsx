@@ -41,8 +41,21 @@ const HomePage = () => {
   return (
     <>
       <MainLayout>
-        <div className="h-[700px] w-full">HOME</div>
-        <footer>
+        <div className="w-full">
+          <div
+            className="absolute bg-cover bg-center h-full w-full"
+            style={{
+              backgroundImage: "url('/assets/images/Background.jpg')",
+            }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <h1 className="text-[white] border p-2  rounded-lg text-3xl font-bold">
+                Your Best Ever Courier Partner
+              </h1>
+            </div>
+          </div>
+        </div>
+        <footer className="fixed bottom-0 w-full z-[99]">
           <Footer />
         </footer>
       </MainLayout>
