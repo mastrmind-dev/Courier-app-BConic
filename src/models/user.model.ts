@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
-import { ICreateUser, IUserDetails } from '../data_structures/interfaces';
+import { ICreateUser, IShipmentSenderDetails, IUserDetails } from '../data_structures/interfaces';
 import prisma from '../lib/prisma';
 
 export const userModel = {
-  getUserByEmail: async (email: string): Promise<(IUserDetails & { id: string }) | null> => {
+  getByEmail: async (email: string): Promise<(IUserDetails & { id: string }) | null> => {
     const user = await prisma.user.findUnique({
       where: {
         email: email,
@@ -11,6 +11,25 @@ export const userModel = {
     });
 
     return user;
+  },
+
+  getById: async (id: string): Promise<IShipmentSenderDetails | null> => {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      senderEmail: user.email,
+      senderName: `${user.firstname} ${user.lastname}`,
+      senderAddress: user.address,
+      senderContactNumber: user.contactNumber,
+    };
   },
 
   createUser: async (

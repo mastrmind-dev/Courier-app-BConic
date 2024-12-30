@@ -6,4 +6,5 @@ export const ERROR_MESSAGE = {
   UNAUTHORIZED_ROLE: 'You are not authorized to access this resource',
   USER_NOT_FOUND: 'User not found',
   PASSWORD_NOT_MATCH: 'Password does not match',
+  SHIPMENT_NOT_FOUND: 'Shipment not found',
 };

@@ -1,5 +1,5 @@
-import xss from "xss";
-import type { Request, Response, NextFunction } from "express";
+import xss from 'xss';
+import type { Request, Response, NextFunction } from 'express';
 
 type RequestBody = Record<string, string>;
 
@@ -7,11 +7,11 @@ const sanitize = (req: Request, res: Response, next: NextFunction): void => {
   const sanitizeInput = (
     input: string | RequestBody | RequestBody[]
   ): string | RequestBody | RequestBody[] | unknown => {
-    if (typeof input === "string") {
+    if (typeof input === 'string') {
       return xss(input);
     } else if (Array.isArray(input)) {
       return input.map(sanitizeInput) as RequestBody[];
-    } else if (typeof input === "object" && input !== null) {
+    } else if (typeof input === 'object' && input !== null) {
       // Recursively sanitize objects
       return Object.keys(input).reduce<Record<string, unknown>>((acc, key) => {
         acc[key] = sanitizeInput(input[key]);
@@ -29,11 +29,11 @@ export const sanitizeAndJSON = (req: Request, res: Response, next: NextFunction)
   const sanitizeInput = (
     input: string | RequestBody | RequestBody[]
   ): string | RequestBody | RequestBody[] | unknown => {
-    if (typeof input === "string") {
+    if (typeof input === 'string') {
       return xss(input);
     } else if (Array.isArray(input)) {
       return input.map(sanitizeInput) as RequestBody[];
-    } else if (typeof input === "object" && input !== null) {
+    } else if (typeof input === 'object' && input !== null) {
       // Recursively sanitize objects
       return Object.keys(input).reduce<Record<string, unknown>>((acc, key) => {
         try {

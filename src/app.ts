@@ -4,11 +4,12 @@ import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import swaggerUI from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 
 import { config } from './config/config';
 import { swaggerSetup } from './lib/swagger';
 import authRouter from './routes/auth.router';
-import cookieParser from 'cookie-parser';
+import shipmentRouter from './routes/shipment.router';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -35,6 +36,7 @@ app.use('/health', (req, res) => {
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSetup));
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/shipment', shipmentRouter);
 
 export const runApp = () => {
   app.listen(config.port, () => {

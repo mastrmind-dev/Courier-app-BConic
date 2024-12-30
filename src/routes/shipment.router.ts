@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authController } from '../controllers/auth.controller';
-import { login, signup } from '../lib/joi';
+import { shipmentController } from '../controllers/shipment.controller';
+import { shipment, shipmentTrack } from '../lib/joi';
 import { isLoggedIn } from '../middlewares/auth';
 import formData from '../middlewares/formData';
 import sanitize from '../middlewares/sanitize';
@@ -10,11 +10,11 @@ const router = Router();
 
 /**
  * @swagger
- * /api/v1/auth/register:
+ * /api/v1/shipment/create:
  *   post:
- *     summary: Local Signup
+ *     summary: Shipment creation
  *     tags:
- *       - Auth Endpoints - Local
+ *       - Shipment endpoints
  *     requestBody:
  *       required: true
  *       content:
@@ -22,33 +22,37 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               recipientEmail:
  *                 type: string
  *                 format: email
- *                 example: "user@example.com"
- *               password:
+ *                 example: "recipient@example.com"
+ *               recipientName:
  *                 type: string
- *                 format: password
- *                 example: "password123"
- *               confirmPassword:
+ *                 example: "Mark Stain"
+ *               recipientAddress:
  *                 type: string
- *                 format: password
- *                 example: "password123"
- *               firstname:
- *                 type: string
- *                 example: "John"
- *               lastname:
- *                 type: string
- *                 example: "Doe"
- *               address:
- *                 type: string
- *                 example: "123 Main St, New York, NY 10030"
- *               contactNumber:
+ *                 example: "123 Main St, Anytown, USA"
+ *               recipientContactNumber:
  *                 type: string
  *                 example: "+1234567890"
+ *               serviceType:
+ *                 type: string
+ *                 example: "Express"
+ *               goodType:
+ *                 type: string
+ *                 example: "Documents"
+ *               weight:
+ *                 type: number
+ *                 example: 1.5
+ *               packagingType:
+ *                 type: string
+ *                 example: "Box"
+ *               paymentMethod:
+ *                 type: string
+ *                 example: "Online"
  *     responses:
  *       200:
- *         description: User created successfully
+ *         description: Shipment created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -57,12 +61,30 @@ const router = Router();
  *                 data:
  *                   type: object
  *                   properties:
- *                     userId:
+ *                     shipmentId:
+ *                       type: string
+ *                     recipientEmail:
+ *                       type: string
+ *                     recipientName:
+ *                       type: string
+ *                     recipientAddress:
+ *                       type: string
+ *                     recipientContactNumber:
+ *                       type: string
+ *                     serviceType:
+ *                       type: string
+ *                     goodType:
+ *                       type: string
+ *                     weight:
+ *                       type: number
+ *                     packagingType:
+ *                       type: string
+ *                     paymentMethod:
  *                       type: string
  *                 message:
  *                   type: string
  *       400:
- *         description: Password does not match
+ *         description: Bad request
  *         content:
  *           application/json:
  *             schema:
@@ -70,8 +92,8 @@ const router = Router();
  *               properties:
  *                 error:
  *                   type: string
- *       409:
- *         description: User already exists
+ *       401:
+ *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
@@ -89,33 +111,32 @@ const router = Router();
  *                 error:
  *                   type: string
  */
-router.post('/register', [formData, sanitize, validationSchema(signup)], authController.signup);
+router.post(
+  '/create',
+  [formData, sanitize, validationSchema(shipment), isLoggedIn],
+  shipmentController.create
+);
 
 /**
  * @swagger
- * /api/v1/auth/login:
+ * /api/v1/shipment/track/{shipmentId}:
  *   post:
- *     summary: Local login
+ *     summary: Shipment tracking
  *     tags:
- *       - Auth Endpoints - Local
+ *       - Shipment endpoints
  *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: "user@example.com"
- *               password:
- *                 type: string
- *                 format: password
- *                 example: "password123"
+ *       required: false
+ *     parameters:
+ *       - in: path
+ *         name: shipmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "202b18ee-e8f0-4151-8cfc-be456bc30f02"
+ *         description: The tracking number of the shipment
  *     responses:
  *       200:
- *         description: User logged successfully
+ *         description: Shipment tracked successfully
  *         content:
  *           application/json:
  *             schema:
@@ -124,14 +145,14 @@ router.post('/register', [formData, sanitize, validationSchema(signup)], authCon
  *                 data:
  *                   type: object
  *                   properties:
- *                     userId:
+ *                     shipmentId:
  *                       type: string
- *                     token:
+ *                     trackingStatus:
  *                       type: string
  *                 message:
  *                   type: string
  *       401:
- *         description: Password does not match
+ *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
@@ -140,7 +161,7 @@ router.post('/register', [formData, sanitize, validationSchema(signup)], authCon
  *                 error:
  *                   type: string
  *       404:
- *         description: User not found
+ *         description: Shipment not found
  *         content:
  *           application/json:
  *             schema:
@@ -158,12 +179,10 @@ router.post('/register', [formData, sanitize, validationSchema(signup)], authCon
  *                 error:
  *                   type: string
  */
-router.post('/login', [formData, sanitize, validationSchema(login)], authController.login);
-
-import { Request, Response } from 'express';
-
-router.post('/test', [isLoggedIn], (req: Request, res: Response) => {
-  res.send('Hello');
-});
+router.post(
+  '/track/:shipmentId',
+  [formData, sanitize, validationSchema(shipmentTrack), isLoggedIn],
+  shipmentController.track
+);
 
 export default router;

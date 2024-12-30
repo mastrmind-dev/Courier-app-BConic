@@ -22,7 +22,7 @@ export const authService = {
 
       const formattedEmail = email.toLowerCase().trim();
 
-      const user = await userModel.getUserByEmail(formattedEmail);
+      const user = await userModel.getByEmail(formattedEmail);
 
       if (user) {
         throw new DetailedError(
@@ -51,7 +51,7 @@ export const authService = {
       const { email, password } = login;
 
       const formattedEmail = email.toLowerCase().trim();
-      const user = await userModel.getUserByEmail(formattedEmail);
+      const user = await userModel.getByEmail(formattedEmail);
 
       if (!user) {
         throw new DetailedError(ERROR_MESSAGE.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND_RESPONSE_CODE);

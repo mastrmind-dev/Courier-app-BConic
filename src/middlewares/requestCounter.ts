@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from 'express';
 
 const requestCounts: Record<string, number> = {};
 
@@ -11,7 +11,7 @@ const requestCounter = (req: Request, res: Response, next: NextFunction): void =
 
     console.log(`IP: ${ip} - Request Count: ${requestCounts[ip]}`);
   } else {
-    console.log("IP: Unknown - Request Count: Unknown");
+    console.log('IP: Unknown - Request Count: Unknown');
   }
 
   next();

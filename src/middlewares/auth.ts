@@ -9,12 +9,10 @@ import { jwt } from '../lib/jwt';
 
 export const isLoggedIn = async (req: Request, res: Response, next: NextFunction) => {
   const sendUnauthorizedResponse = () => {
-    const err = new DetailedError(
+    throw new DetailedError(
       ERROR_MESSAGE.UNAUTHORIZED_USER,
       HTTP_STATUS.UNAUTHORIZED_RESPONSE_CODE
     );
-
-    ERROR_RESPONSE(res, err);
   };
 
   try {
@@ -30,7 +28,6 @@ export const isLoggedIn = async (req: Request, res: Response, next: NextFunction
       decoded = jwt.verifyToken(token) as { id: string; role: string };
       console.log(decoded);
     } catch {
-      console.error('Error verifying token');
       decoded = {} as { id: string; role: string };
     }
 
@@ -43,6 +40,12 @@ export const isLoggedIn = async (req: Request, res: Response, next: NextFunction
     next();
   } catch (error) {
     console.error('Error verifying token:', error);
+
+    if (error instanceof DetailedError) {
+      ERROR_RESPONSE(res, error);
+      return;
+    }
+
     const err = new DetailedError(
       ERROR_MESSAGE.INTERNAL_SERVER_ERROR,
       HTTP_STATUS.INTERNAL_SERVER_ERROR_RESPONSE_CODE

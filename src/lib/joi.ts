@@ -18,3 +18,23 @@ export const login: SchemaMap = {
     password: Joi.string().required(),
   }),
 };
+
+export const shipment: SchemaMap = {
+  body: Joi.object({
+    recipientEmail: Joi.string().email().required(),
+    recipientName: Joi.string().required(),
+    recipientAddress: Joi.string().required(),
+    recipientContactNumber: Joi.string().required(),
+    serviceType: Joi.string().required(),
+    goodType: Joi.string().required(),
+    weight: Joi.number().required(),
+    packagingType: Joi.string().required(),
+    paymentMethod: Joi.string().required(),
+  }),
+};
+
+export const shipmentTrack: SchemaMap = {
+  params: Joi.object({
+    shipmentId: Joi.string().required(),
+  }),
+};
