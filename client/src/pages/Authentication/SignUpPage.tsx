@@ -12,123 +12,53 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { signUpFormSchema } from '@/data_structures/schemas';
 import MainLayout from '@/layouts/MainLayout';
-import { SignUpFormFieldsType } from '@/data_structures/types';
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email address.' })
-    .min(2, {
-      message: 'Email must be at least 2 characters.',
-    })
-    .max(50, {
-      message: 'Email must be less than 50 characters',
-    }),
-  password: z
-    .string()
-    .min(6, {
-      message: 'Password must be at least 6 characters.',
-    })
-    .max(20, {
-      message: 'Password must be less than 20 characters',
-    }),
-  confirm_password: z
-    .string()
-    .min(6, {
-      message: 'Confirm Password must be at least 6 characters.',
-    })
-    .max(20, {
-      message: 'Confirm Password must be less than 20 characters',
-    }),
-  first_name: z
-    .string()
-    .min(1, {
-      message: 'First Name must be at least 1 character.',
-    })
-    .max(50, {
-      message: 'First Name must be less than 50 characters',
-    }),
-  last_name: z
-    .string()
-    .min(1, {
-      message: 'Last Name must be at least 1 character.',
-    })
-    .max(50, {
-      message: 'Last Name must be less than 50 characters',
-    }),
-  address: z
-    .string()
-    .min(1, {
-      message: 'Address must be at least 1 character.',
-    })
-    .max(100, {
-      message: 'Address must be less than 100 characters',
-    }),
-  contact_number: z
-    .string()
-    .min(10, {
-      message: 'Contact Number must be at least 10 characters.',
-    })
-    .max(15, {
-      message: 'Contact Number must be less than 15 characters',
-    }),
-});
+import { signUpFormFields } from '@/data_structures/objects';
+import { useRegister } from '@/hooks/api/auth';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/providers/ToastProvider';
 
 const SignUpPage = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [loading, setLoading] = useState(false);
+
+  const { success, error } = useToast();
+
+  const navigate = useNavigate();
+
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       email: '',
       password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      address: '',
+      contactNumber: '',
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const useRegisterMutation = useRegister();
 
-  const formFields: {
-    name: SignUpFormFieldsType;
-    placeholder: string;
-    label: string;
-  }[] = [
-    {
-      name: 'email',
-      placeholder: 'Email',
-      label: 'Email',
-    },
-    {
-      name: 'password',
-      placeholder: 'password',
-      label: 'Password',
-    },
-    {
-      name: 'confirm_password',
-      placeholder: 'Confirm password',
-      label: 'Confirm Password',
-    },
-    {
-      name: 'first_name',
-      placeholder: 'First name',
-      label: 'First Name',
-    },
-    {
-      name: 'last_name',
-      placeholder: 'Last name',
-      label: 'Last Name',
-    },
-    {
-      name: 'address',
-      placeholder: 'Address',
-      label: 'Address',
-    },
-    {
-      name: 'contact_number',
-      placeholder: 'Contact number',
-      label: 'Contact Number',
-    },
-  ];
+  const onSubmit = async (values: z.infer<typeof signUpFormSchema>) => {
+    console.log(values);
+    setLoading(true);
+
+    useRegisterMutation.mutate(values, {
+      onSuccess: () => {
+        setLoading(false);
+        success('User details saved successfully');
+        navigate('/login');
+      },
+      onError: (err) => {
+        console.error('Error:', err);
+        error('Registration failed');
+        setLoading(false);
+      },
+    });
+  };
 
   return (
     <MainLayout>
@@ -140,7 +70,7 @@ const SignUpPage = () => {
           >
             <p className="font-bold text-[20px] text-[#081470] flex justify-center">Sign Up</p>
             <hr className="border-[#081470] w-[100px] m-auto" />
-            {formFields.map((field) => (
+            {signUpFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}
@@ -150,9 +80,16 @@ const SignUpPage = () => {
                     <FormItem>
                       <FormLabel>{field.label}</FormLabel>
                       <FormControl>
-                        <Input placeholder={field.placeholder} {...formField} />
+                        <Input
+                          type={
+                            field.name === 'password' || field.name === 'confirmPassword'
+                              ? 'password'
+                              : 'text'
+                          }
+                          placeholder={field.placeholder}
+                          {...formField}
+                        />
                       </FormControl>
-                      {/* <FormDescription>This is your public display name.</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   </div>
@@ -160,7 +97,7 @@ const SignUpPage = () => {
               />
             ))}
             <hr className="border-[#081470]" />
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" isLoading={loading}>
               Submit
             </Button>
           </form>

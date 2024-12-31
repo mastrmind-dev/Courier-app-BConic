@@ -1,8 +1,18 @@
 export type SignUpFormFieldsType =
   | 'email'
   | 'password'
-  | 'confirm_password'
-  | 'first_name'
-  | 'last_name'
+  | 'confirmPassword'
+  | 'firstName'
+  | 'lastName'
   | 'address'
-  | 'contact_number';
+  | 'contactNumber';
+
+export type RegisterData = {
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  contactNumber: string;
+};
