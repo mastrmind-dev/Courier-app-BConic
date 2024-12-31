@@ -5,7 +5,7 @@ import { SUCCESS_MESSAGE } from '../constants/success';
 import { shipmentService } from '../services/shipment.service';
 
 export const shipmentController = {
-  create: async (req: Request, res: Response) => {
+  create: async (req: Request, res: Response): Promise<void> => {
     try {
       const shipment = await shipmentService.create(req.body, req.user.id);
 
@@ -20,12 +20,9 @@ export const shipmentController = {
     }
   },
 
-  track: async (req: Request, res: Response) => {
+  track: async (req: Request, res: Response): Promise<void> => {
     try {
-      const trackingDetails = await shipmentService.track(
-        req.params.shipmentId,
-        req.user.id
-      );
+      const trackingDetails = await shipmentService.track(req.params.shipmentId, req.user.id);
 
       return SUCCESS_RESPONSE(
         res,

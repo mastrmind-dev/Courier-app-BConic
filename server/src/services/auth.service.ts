@@ -2,13 +2,13 @@ import bcrypt from 'bcrypt';
 
 import { ERROR_MESSAGE } from '../constants/error';
 import { HTTP_STATUS } from '../constants/httpStatus';
-import { ILogin, IUserDetails } from '../data_structures/interfaces';
+import { ILogin, IUserDetails, IUserNonSensitiveDetails } from '../data_structures/interfaces';
 import { DetailedError } from '../lib/detailedError';
 import { jwt } from '../lib/jwt';
 import { userModel } from '../models/user.model';
 
 export const authService = {
-  register: async (userDetails: IUserDetails) => {
+  register: async (userDetails: IUserDetails): Promise<string | undefined> => {
     try {
       const { email, password, confirmPassword, firstName, lastName, address, contactNumber } =
         userDetails;
@@ -31,7 +31,7 @@ export const authService = {
         );
       }
 
-      const userId = await userModel.createUser(
+      const userId = await userModel.create(
         email,
         password,
         firstName,
@@ -46,9 +46,11 @@ export const authService = {
     }
   },
 
-  login: async (login: ILogin) => {
+  login: async (
+    login: ILogin
+  ): Promise<{ token: string; user: IUserNonSensitiveDetails } | undefined> => {
     try {
-      const { email, password } = login;
+      const { email, password: clientPassword } = login;
 
       const formattedEmail = email.toLowerCase().trim();
       const user = await userModel.getByEmail(formattedEmail);
@@ -57,7 +59,7 @@ export const authService = {
         throw new DetailedError(ERROR_MESSAGE.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND_RESPONSE_CODE);
       }
 
-      const isVerified = await loginVerification(user.password, password);
+      const isVerified = await loginVerification(user.password, clientPassword);
 
       if (!isVerified) {
         throw new DetailedError(
@@ -68,7 +70,10 @@ export const authService = {
 
       const token = jwt.generateJWT(user.id, user.email, user.role);
 
-      return { token, userId: user.id };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...userDetails } = user;
+
+      return { token, user: userDetails };
     } catch (error) {
       console.error('Error logging in', error);
       DetailedError.handleError(error);

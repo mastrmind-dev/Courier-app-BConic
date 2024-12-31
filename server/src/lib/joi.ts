@@ -25,11 +25,11 @@ export const shipment: SchemaMap = {
     recipientName: Joi.string().required(),
     recipientAddress: Joi.string().required(),
     recipientContactNumber: Joi.string().required(),
-    serviceType: Joi.string().required(),
-    goodType: Joi.string().required(),
+    serviceType: Joi.string().valid('express', 'economy', 'standard').required(),
+    goodType: Joi.string().valid('fragile', 'electronic', 'perishable', 'flammable').required(),
     weight: Joi.number().required(),
-    packagingType: Joi.string().required(),
-    paymentMethod: Joi.string().required(),
+    packagingType: Joi.string().valid('box', 'envelop').required(),
+    paymentMethod: Joi.string().valid('cash on delivery', 'online', 'credit card').required(),
   }),
 };
 

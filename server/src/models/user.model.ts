@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { ICreateUser, IShipmentSenderDetails, IUserDetails } from '../data_structures/interfaces';
+import { IShipmentSenderDetails, IUserDetails } from '../data_structures/interfaces';
 import prisma from '../lib/prisma';
 
 export const userModel = {
@@ -32,14 +32,14 @@ export const userModel = {
     };
   },
 
-  createUser: async (
+  create: async (
     email: string,
     password: string,
     firstName: string,
     lastName: string,
     address: string,
     contactNumber: string
-  ): Promise<ICreateUser> => {
+  ): Promise<string> => {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -54,14 +54,6 @@ export const userModel = {
       },
     });
 
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      address: user.address,
-      contactNumber: user.contactNumber,
-      role: user.role,
-    };
+    return user.id;
   },
 };

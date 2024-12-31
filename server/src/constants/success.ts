@@ -3,4 +3,5 @@ export const SUCCESS_MESSAGE = {
   LOGIN_SUCCESS: 'Successfully logged in',
   SHIPMENT_CREATED: 'Shipment created successfully',
   SHIPMENT_TRACKED: 'Shipment tracked successfully',
+  LOGGED_OUT: 'Successfully logged out',
 };

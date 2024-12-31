@@ -10,7 +10,7 @@ export interface IUserDetails {
   role: string;
 }
 
-export interface ICreateUser {
+export interface IUserNonSensitiveDetails {
   id: string;
   email: string;
   firstName: string;

@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: config.corsOrigins,
+    credentials: true,
   })
 );
 app.use(helmet());
