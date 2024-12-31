@@ -16,3 +16,8 @@ export type RegisterData = {
   address: string;
   contactNumber: string;
 };
+
+export type LoginData = {
+  email: string;
+  password: string; 
+}

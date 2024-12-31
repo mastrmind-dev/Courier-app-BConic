@@ -41,3 +41,23 @@ export const signUpFormFields: {
     label: 'Contact Number',
   },
 ];
+
+export const loginFormFields: {
+  name: 'email' | 'password';
+  placeholder: string;
+  label: string;
+  type: string;
+}[] = [
+  {
+    name: 'email',
+    placeholder: 'Email',
+    label: 'Email',
+    type: 'email',
+  },
+  {
+    name: 'password',
+    placeholder: 'Password',
+    label: 'Password',
+    type: 'password',
+  },
+];

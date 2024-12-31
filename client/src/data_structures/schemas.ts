@@ -59,3 +59,23 @@ export const signUpFormSchema = z.object({
       message: 'Contact Number must be less than 15 characters',
     }),
 });
+
+export const loginFormSchema = z.object({
+  email: z
+    .string()
+    .email({ message: 'Invalid email address.' })
+    .min(2, {
+      message: 'Email must be at least 2 characters.',
+    })
+    .max(50, {
+      message: 'Email must be less than 50 characters',
+    }),
+  password: z
+    .string()
+    .min(6, {
+      message: 'Password must be at least 6 characters.',
+    })
+    .max(20, {
+      message: 'Password must be less than 20 characters',
+    }),
+});

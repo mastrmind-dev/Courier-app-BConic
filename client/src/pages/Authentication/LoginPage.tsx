@@ -13,59 +13,47 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import MainLayout from '@/layouts/MainLayout';
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email address.' })
-    .min(2, {
-      message: 'Email must be at least 2 characters.',
-    })
-    .max(50, {
-      message: 'Email must be less than 50 characters',
-    }),
-  password: z
-    .string()
-    .min(6, {
-      message: 'Password must be at least 6 characters.',
-    })
-    .max(20, {
-      message: 'Password must be less than 20 characters',
-    }),
-});
+import { loginFormFields } from '@/data_structures/objects';
+import { loginFormSchema } from '@/data_structures/schemas';
+import { useState } from 'react';
+import { useLogin } from '@/hooks/api/auth';
+import { useToast } from '@/providers/ToastProvider';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const useLoginMutation = useLogin();
 
-  const formFields: {
-    name: 'email' | 'password';
-    placeholder: string;
-    label: string;
-    type: string;
-  }[] = [
-    {
-      name: 'email',
-      placeholder: 'Email',
-      label: 'Email',
-      type: 'email',
-    },
-    {
-      name: 'password',
-      placeholder: 'Password',
-      label: 'Password',
-      type: 'password',
-    },
-  ];
+  const { success, error } = useToast();
+
+  const navigate = useNavigate();
+
+  function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    console.log(values);
+    setLoading(true);
+
+    useLoginMutation.mutate(values, {
+      onSuccess: () => {
+        setLoading(false);
+        success('Loged in successfully');
+        navigate('/dashboard');
+      },
+      onError: (err) => {
+        console.error('Error:', err);
+        error('Login failed');
+        setLoading(false);
+      },
+    });
+  }
 
   return (
     <MainLayout>
@@ -77,7 +65,7 @@ const LoginPage = () => {
           >
             <p className="font-bold text-[20px] flex justify-center text-[#081470]">Login</p>
             <hr className="border-[#081470] w-[100px] m-auto" />
-            {formFields.map((field) => (
+            {loginFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}
@@ -87,7 +75,11 @@ const LoginPage = () => {
                     <FormItem>
                       <FormLabel>{field.label}</FormLabel>
                       <FormControl>
-                        <Input placeholder={field.placeholder} {...formField} />
+                        <Input
+                          placeholder={field.placeholder}
+                          {...formField}
+                          type={field.name === 'password' ? 'password' : 'text'}
+                        />
                       </FormControl>
                       {/* <FormDescription>This is your public display name.</FormDescription> */}
                       <FormMessage />
@@ -97,7 +89,7 @@ const LoginPage = () => {
               />
             ))}
             <hr className="border-[#081470]" />
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" isLoading={loading}>
               Submit
             </Button>
           </form>
