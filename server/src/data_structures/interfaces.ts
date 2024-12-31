@@ -3,8 +3,8 @@ export interface IUserDetails {
   email: string;
   password: string;
   confirmPassword?: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   address: string;
   contactNumber: string;
   role: string;
@@ -13,8 +13,8 @@ export interface IUserDetails {
 export interface ICreateUser {
   id: string;
   email: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   address: string;
   contactNumber: string;
   role: string;

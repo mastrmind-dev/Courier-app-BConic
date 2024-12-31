@@ -34,10 +34,10 @@ const router = Router();
  *                 type: string
  *                 format: password
  *                 example: "password123"
- *               firstname:
+ *               firstName:
  *                 type: string
  *                 example: "John"
- *               lastname:
+ *               lastName:
  *                 type: string
  *                 example: "Doe"
  *               address:

@@ -26,7 +26,7 @@ export const userModel = {
 
     return {
       senderEmail: user.email,
-      senderName: `${user.firstname} ${user.lastname}`,
+      senderName: `${user.firstName} ${user.lastName}`,
       senderAddress: user.address,
       senderContactNumber: user.contactNumber,
     };
@@ -35,8 +35,8 @@ export const userModel = {
   createUser: async (
     email: string,
     password: string,
-    firstname: string,
-    lastname: string,
+    firstName: string,
+    lastName: string,
     address: string,
     contactNumber: string
   ): Promise<ICreateUser> => {
@@ -46,8 +46,8 @@ export const userModel = {
       data: {
         email,
         password: passwordHash,
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         address,
         contactNumber,
         role: 'USER',
@@ -57,8 +57,8 @@ export const userModel = {
     return {
       id: user.id,
       email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
+      firstName: user.firstName,
+      lastName: user.lastName,
       address: user.address,
       contactNumber: user.contactNumber,
       role: user.role,

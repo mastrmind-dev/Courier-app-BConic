@@ -10,7 +10,7 @@ import { userModel } from '../models/user.model';
 export const authService = {
   register: async (userDetails: IUserDetails) => {
     try {
-      const { email, password, confirmPassword, firstname, lastname, address, contactNumber } =
+      const { email, password, confirmPassword, firstName, lastName, address, contactNumber } =
         userDetails;
 
       if (password !== confirmPassword) {
@@ -34,8 +34,8 @@ export const authService = {
       const userId = await userModel.createUser(
         email,
         password,
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         address,
         contactNumber
       );
