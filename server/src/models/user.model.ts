@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { IShipmentSenderDetails, IUserDetails } from '../data_structures/interfaces';
 import prisma from '../lib/prisma';
+import { ROLE } from '../data_structures/enums';
 
 export const userModel = {
   getByEmail: async (email: string): Promise<(IUserDetails & { id: string }) | null> => {
@@ -50,7 +51,7 @@ export const userModel = {
         lastName,
         address,
         contactNumber,
-        role: 'USER',
+        role: ROLE.USER,
       },
     });
 

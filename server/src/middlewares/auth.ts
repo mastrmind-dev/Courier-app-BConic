@@ -67,7 +67,7 @@ export const isAdmin = async (req: Request, res: Response, next: NextFunction) =
 
     next();
   } catch (error) {
-    console.error('Error verifying token:', error);
+    console.error('Error verifying user role:', error);
 
     const err = new DetailedError(
       ERROR_MESSAGE.INTERNAL_SERVER_ERROR,

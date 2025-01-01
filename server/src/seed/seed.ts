@@ -1,14 +1,23 @@
 import bcrypt from 'bcrypt';
 import prisma from '../lib/prisma';
+import { ROLE } from '../data_structures/enums';
 
 const seed = async () => {
-  const hashedPassword = await bcrypt.hash('admin', 10);
+  await prisma.user.delete({
+    where: {
+      email: 'admin@example.com',
+    },
+  });
+
+  console.log('Existing admin user deleted');
+
+  const hashedPassword = await bcrypt.hash('admin123', 10);
 
   const adminUser = await prisma.user.create({
     data: {
       email: 'admin@example.com',
       password: hashedPassword,
-      role: 'ADMIN',
+      role: ROLE.ADMIN,
       firstName: 'Admin',
       lastName: 'User',
       address: '123 Admin St',

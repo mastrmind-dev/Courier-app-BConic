@@ -33,8 +33,17 @@ export const shipment: SchemaMap = {
   }),
 };
 
-export const shipmentTrack: SchemaMap = {
+export const shipmentId: SchemaMap = {
   params: Joi.object({
     shipmentId: Joi.string().required(),
+  }),
+};
+
+export const trackingStatus: SchemaMap = {
+  params: Joi.object({
+    shipmentId: Joi.string().required(),
+  }),
+  body: Joi.object({
+    trackingStatus: Joi.string().required(),
   }),
 };

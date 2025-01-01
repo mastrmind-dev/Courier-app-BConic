@@ -162,7 +162,7 @@ router.post('/login', [formData, sanitize, validationSchema(login)], authControl
 /**
  * @swagger
  * /api/v1/auth/logout:
- *   get:
+ *   post:
  *     summary: Logout
  *     tags:
  *       - Auth Endpoints - Local

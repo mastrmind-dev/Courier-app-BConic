@@ -1,0 +1,1 @@
+export type CommonType = string | number | boolean | Date | { [key: string]: CommonType };
