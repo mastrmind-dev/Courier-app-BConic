@@ -20,126 +20,58 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-
-const formSchema = z.object({
-  recipient_name: z
-    .string()
-    .min(2, {
-      message: 'Recipient name must be at least 2 characters.',
-    })
-    .max(50, {
-      message: 'Recipient name must be less than 50 characters',
-    }),
-  recipient_contact_number: z.string().max(20, {
-    message: 'Contact number must be less than 20 characters',
-  }),
-  recipient_address: z
-    .string()
-    .min(6, {
-      message: 'Address must be at least 6 characters.',
-    })
-    .max(100, {
-      message: 'Address must be less than 100 characters',
-    }),
-  recipient_email: z.string().email({
-    message: 'Please enter a valid email address',
-  }),
-  service_type: z.enum(['standard', 'express', 'economy'], {
-    required_error: 'Please select a service type',
-    invalid_type_error: 'Service type must be standard, express, or economy',
-  }),
-  good_type: z.enum(['fragile', 'electronic', 'perishable', 'flammable'], {
-    required_error: 'Please select a good type',
-    invalid_type_error: 'Good type must be fragile, electronic, perishable, or flammable',
-  }),
-  packaging_type: z.enum(['box', 'envelop'], {
-    required_error: 'Please select a packaging type',
-    invalid_type_error: 'Packaging type must be box or envelop',
-  }),
-  weight: z.number().max(10, {
-    message: 'Weight must be less than 10 kg',
-  }),
-  payment_method: z.enum(['cash_on_delivery', 'credit_card', 'online'], {
-    required_error: 'Please select a payment method',
-    invalid_type_error: 'Payment method must be cash on delivery, credit card, or online',
-  }),
-});
+import { createShipmentFormSchema } from '@/data_structures/schemas';
+import { createShipmentFormFields } from '@/data_structures/fields';
+import { useCreateShipment, useGetShipmentsByUserId } from '@/hooks/api/shipment';
+import { useState } from 'react';
+import { useToast } from '@/providers/ToastProvider/ToastProvider';
+import { showResponseError } from '@/utils/errorUtils';
+import { IError } from '@/data_structures/interfaces';
 
 const CreateShipment = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [loading, setLoading] = useState(false);
+
+  const { refetch } = useGetShipmentsByUserId();
+
+  const form = useForm<z.infer<typeof createShipmentFormSchema>>({
+    resolver: zodResolver(createShipmentFormSchema),
+    defaultValues: {
+      recipientName: '',
+      recipientContactNumber: '',
+      recipientAddress: '',
+      recipientEmail: '',
+      weight: '',
+      serviceType: 'economy',
+      goodType: 'fragile',
+      packagingType: 'box',
+      paymentMethod: 'cash on delivery',
+    },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const useCreateShipmentMutation = useCreateShipment();
 
-  const formFields: {
-    name: keyof z.infer<typeof formSchema>;
-    placeholder: string;
-    label: string;
-    inputType: string;
-    inputValues?: string[];
-  }[] = [
-    {
-      name: 'recipient_name',
-      placeholder: 'Enter recipient name',
-      label: 'Recipient Name',
-      inputType: 'input',
-    },
-    {
-      name: 'recipient_contact_number',
-      placeholder: 'Enter contact number',
-      label: 'Contact Number',
-      inputType: 'input',
-    },
-    {
-      name: 'recipient_address',
-      placeholder: 'Enter address',
-      label: 'Address',
-      inputType: 'input',
-    },
-    {
-      name: 'recipient_email',
-      placeholder: 'Enter email address',
-      label: 'Email',
-      inputType: 'input',
-    },
-    {
-      name: 'weight',
-      placeholder: 'Enter weight in kg',
-      label: 'Weight (kg)',
-      inputType: 'input',
-    },
-    {
-      name: 'service_type',
-      placeholder: 'Select service type',
-      label: 'Service Type',
-      inputType: 'dropdown',
-      inputValues: ['Standard', 'Express', 'Economy'],
-    },
-    {
-      name: 'good_type',
-      placeholder: 'Select good type',
-      label: 'Good Type',
-      inputType: 'dropdown',
-      inputValues: ['Fragile', 'Electronic', 'Perishable', 'Flammable'],
-    },
-    {
-      name: 'packaging_type',
-      placeholder: 'Select packaging type',
-      label: 'Packaging Type',
-      inputType: 'dropdown',
-      inputValues: ['Box', 'Envelop'],
-    },
-    {
-      name: 'payment_method',
-      placeholder: 'Select payment method',
-      label: 'Payment Method',
-      inputType: 'dropdown',
-      inputValues: ['Cash on delivery', 'Credit card', 'Online'],
-    },
-  ];
+  const { success, error } = useToast();
+
+  function onSubmit(values: z.infer<typeof createShipmentFormSchema>) {
+    console.log(values);
+    setLoading(true);
+
+    useCreateShipmentMutation.mutate(
+      { ...values, weight: parseFloat(values.weight) },
+      {
+        onSuccess: () => {
+          refetch();
+          setLoading(false);
+          success('Shipment created successfully');
+        },
+        onError: (err) => {
+          console.error('Error:', err);
+          error(showResponseError(err as IError) || 'Shipment creation failed');
+          setLoading(false);
+        },
+      }
+    );
+  }
 
   return (
     <div className="flex flex-col w-full my-[20px] ml-[10px] justify-center">
@@ -147,7 +79,7 @@ const CreateShipment = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="gap-5 p-5 w-full flex flex-wrap">
-            {formFields.map((field) => (
+            {createShipmentFormFields.map((field) => (
               <FormField
                 key={field.name}
                 control={form.control}
@@ -158,16 +90,26 @@ const CreateShipment = () => {
                     <FormControl>
                       {(() => {
                         if (field.inputType === 'input') {
-                          return <Input placeholder={field.placeholder} {...formField} />;
+                          return (
+                            <Input
+                              placeholder={field.placeholder}
+                              {...formField}
+                              type={field.name === 'weight' ? 'number' : 'text'}
+                            />
+                          );
                         } else {
                           return (
-                            <Select>
+                            <Select onValueChange={formField.onChange}>
                               <SelectTrigger className="w-full">
                                 <SelectValue placeholder={field.placeholder} />
                               </SelectTrigger>
                               <SelectContent>
                                 {field.inputValues?.map((value) => {
-                                  return <SelectItem value={value}>{value}</SelectItem>;
+                                  return (
+                                    <SelectItem value={value.toLowerCase()} key={value}>
+                                      {value}
+                                    </SelectItem>
+                                  );
                                 })}
                               </SelectContent>
                             </Select>
@@ -175,14 +117,13 @@ const CreateShipment = () => {
                         }
                       })()}
                     </FormControl>
-                    {/* <FormDescription>This is your public display name.</FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
               />
             ))}
           </div>
-          <Button type="submit" className="w-[300px] mt-[20px] ml-[20px]">
+          <Button type="submit" className="w-[300px] mt-[20px] ml-[20px]" isLoading={loading}>
             Submit
           </Button>
         </form>

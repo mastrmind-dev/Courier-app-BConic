@@ -1,37 +1,29 @@
+import { ROLE } from '@/data_structures/enums';
+import { IUserState } from '@/data_structures/interfaces';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-export type UserState = {
-  status: boolean;
-  data: unknown;
-  message: string | undefined;
-  token: string | undefined;
-
-  setStatus: (value: boolean) => void;
-  setData: (value: unknown) => void;
-  setMessage: (value: string | undefined) => void;
-  setToken: (value: string | undefined) => void;
-  clearData: () => void;
-};
-
-const useUserStore = create<UserState>()(
+const useUserStore = create<IUserState>()(
   devtools(
     persist(
       (set) => ({
-        status: false,
-        data: undefined,
-        message: undefined,
-        token: undefined,
-        setStatus: (value) => set(() => ({ status: value })),
-        setData: (value) => set(() => ({ data: value })),
-        setMessage: (value) => set(() => ({ message: value })),
-        setToken: (value) => set(() => ({ token: value })),
+        id: '',
+        firstName: '',
+        lastName: '',
+        role: ROLE.USER,
+        email: '',
+        setId: (value) => set(() => ({ id: value })),
+        setFirstName: (value) => set(() => ({ firstName: value })),
+        setLastName: (value) => set(() => ({ lastName: value })),
+        setRole: (value) => set(() => ({ role: value })),
+        setEmail: (value) => set(() => ({ email: value })),
         clearData: () =>
           set(() => ({
-            status: false,
-            data: undefined,
-            message: undefined,
-            token: undefined,
+            id: '',
+            firstName: '',
+            lastName: '',
+            role: ROLE.USER,
+            email: '',
           })),
       }),
       {

@@ -2,8 +2,8 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Spinner } from './components/ui/spinner';
 import NotFoundPage from './pages/NotFoundPage';
+import ProtectedRoute from './middlewares/protectedRoutes';
 
-// Lazy load pages to improve performance by splitting the bundle
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const LoginPage = lazy(() => import('@/pages/Authentication/LoginPage'));
 const SignupPage = lazy(() => import('@/pages/Authentication/SignUpPage'));
@@ -15,7 +15,7 @@ const App = () => {
       {/* Suspense component is used to show a fallback spinner while pages are being lazy loaded */}
       <Suspense
         fallback={
-          <div className="flex items-center justify-center h-[50vh]">
+          <div className="flex items-center justify-center h-[50vh] w-[100vw]">
             <Spinner />
           </div>
         }
@@ -26,9 +26,9 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignupPage />} />
           {/* ProtectedRoute component ensures that these routes are only accessible to authenticated users */}
-          {/* <Route element={<ProtectedRoute />}> */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          {/* </Route> */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
 
           {/* Fallback Route */}
           {/* If no other routes match, the NotFoundPage component is displayed */}

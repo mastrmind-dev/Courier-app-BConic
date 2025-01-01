@@ -1,76 +1,106 @@
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { IError } from '@/data_structures/interfaces';
+import { useLogout } from '@/hooks/api/auth';
+import { useToast } from '@/providers/ToastProvider/ToastProvider';
+import useUserStore from '@/store/user';
+import { showResponseError } from '@/utils/errorUtils';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UserButton = () => {
+  const userStore = useUserStore();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const { success, error } = useToast();
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const navigate = useNavigate();
+
+  const useLogoutMutation = useLogout();
+
+  const handleLogout = () => {
+    setIsLoading(true);
+
+    useLogoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        userStore.clearData();
+        success('Logged out successfully');
+        setIsLoading(false);
+
+        navigate('/');
+      },
+      onError: (err) => {
+        console.error('Error:', err);
+        error(showResponseError(err as IError) || 'Logout failed');
+        setIsLoading(false);
+      },
+    });
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">Open</Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            Profile
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Settings
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Keyboard shortcuts
-            <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Team</DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>Email</DropdownMenuItem>
-                <DropdownMenuItem>Message</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>More...</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-          <DropdownMenuItem>
-            New Team
-            <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>GitHub</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
-        <DropdownMenuItem disabled>API</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          Log out
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div ref={dropdownRef}>
+      <div className="relative inline-block text-left">
+        <div
+          className="flex items-center gap-2 font-bold text-white cursor-pointer"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <p>{userStore.firstName}</p>
+          <img
+            src={`https://gravatar.com/avatar/${userStore.id.replace(/-/g, '')}?s=400&d=robohash&r=x`}
+            alt="User Avatar"
+            width={40}
+            height={40}
+            className="rounded-full border-2"
+          />
+        </div>
+        {isOpen && (
+          <div
+            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="options-menu"
+          >
+            <div className="p1" role="none">
+              <a
+                href="#"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
+                role="menuitem"
+              >
+                Update Profile
+              </a>
+              <a
+                href="/dashboard"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                role="menuitem"
+              >
+                Dashboard
+              </a>
+              <a
+                href="#"
+                className="block px-4 py-2 text-sm hover:text-red-500 hover:bg-gray-100 bg-red-500 text-white rounded-b-md"
+                role="menuitem"
+                onClick={handleLogout}
+              >
+                {isLoading ? 'Loggin out...' : 'Logout'}
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

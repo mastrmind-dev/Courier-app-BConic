@@ -1,7 +1,6 @@
 // src/pages/HomePage.tsx
 // This is the main landing page of the application.
 
-import Footer from '@/components/organisms/Footer/Footer';
 import MainLayout from '@/layouts/MainLayout';
 // import { useLoginSuccess } from '@/services/auth.service';
 // import LandingPage from './Components/LandingPage';
@@ -40,7 +39,7 @@ const HomePage = () => {
 
   return (
     <>
-      <MainLayout>
+      <MainLayout showFooter={true}>
         <div className="w-full">
           <div
             className="absolute bg-cover bg-center h-full w-full"
@@ -55,9 +54,6 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <footer className="fixed bottom-0 w-full z-[99]">
-          <Footer />
-        </footer>
       </MainLayout>
     </>
   );

@@ -14,11 +14,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { signUpFormSchema } from '@/data_structures/schemas';
 import MainLayout from '@/layouts/MainLayout';
-import { signUpFormFields } from '@/data_structures/objects';
+import { signUpFormFields } from '@/data_structures/fields';
 import { useRegister } from '@/hooks/api/auth';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/providers/ToastProvider';
+import { useToast } from '@/providers/ToastProvider/ToastProvider';
+import useUserStore from '@/store/user';
+import { showResponseError } from '@/utils/errorUtils';
+import { IError } from '@/data_structures/interfaces';
 
 const SignUpPage = () => {
   const [loading, setLoading] = useState(false);
@@ -49,16 +52,18 @@ const SignUpPage = () => {
     useRegisterMutation.mutate(values, {
       onSuccess: () => {
         setLoading(false);
-        success('User details saved successfully');
+        success('User registered successfully');
         navigate('/login');
       },
       onError: (err) => {
         console.error('Error:', err);
-        error('Registration failed');
+        error(showResponseError(err as IError) || 'Registration failed');
         setLoading(false);
       },
     });
   };
+
+  const userStore = useUserStore();
 
   return (
     <MainLayout>
@@ -97,7 +102,14 @@ const SignUpPage = () => {
               />
             ))}
             <hr className="border-[#081470]" />
-            <Button type="submit" className="w-full" isLoading={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              isLoading={loading}
+              onClick={() => {
+                userStore.clearData();
+              }}
+            >
               Submit
             </Button>
           </form>

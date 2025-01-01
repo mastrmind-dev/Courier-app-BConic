@@ -12,13 +12,18 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import MainLayout from '@/layouts/MainLayout';
-import { loginFormFields } from '@/data_structures/objects';
+import { loginFormFields } from '@/data_structures/fields';
+import { IError, IUserNonSensitiveDetails } from '@/data_structures/interfaces';
 import { loginFormSchema } from '@/data_structures/schemas';
-import { useState } from 'react';
+import { Role } from '@/data_structures/types';
 import { useLogin } from '@/hooks/api/auth';
-import { useToast } from '@/providers/ToastProvider';
+import MainLayout from '@/layouts/MainLayout';
+import { useToast } from '@/providers/ToastProvider/ToastProvider';
+import useUserStore from '@/store/user';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ROLE } from '@/data_structures/enums';
+import { showResponseError } from '@/utils/errorUtils';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -31,6 +36,8 @@ const LoginPage = () => {
     },
   });
 
+  const userStore = useUserStore();
+
   const useLoginMutation = useLogin();
 
   const { success, error } = useToast();
@@ -42,14 +49,22 @@ const LoginPage = () => {
     setLoading(true);
 
     useLoginMutation.mutate(values, {
-      onSuccess: () => {
+      onSuccess: (data: { data: { data: { user: IUserNonSensitiveDetails } } }) => {
+        const { id, firstName, lastName, email, role } = data.data.data.user;
+
+        userStore.setId(id);
+        userStore.setFirstName(firstName || '');
+        userStore.setLastName(lastName || '');
+        userStore.setRole((role as Role) || ROLE.USER);
+        userStore.setEmail(email || '');
+
         setLoading(false);
         success('Loged in successfully');
         navigate('/dashboard');
       },
       onError: (err) => {
         console.error('Error:', err);
-        error('Login failed');
+        error(showResponseError(err as IError) || 'Login failed');
         setLoading(false);
       },
     });

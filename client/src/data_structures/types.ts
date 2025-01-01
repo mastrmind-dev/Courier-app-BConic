@@ -1,12 +1,3 @@
-export type SignUpFormFieldsType =
-  | 'email'
-  | 'password'
-  | 'confirmPassword'
-  | 'firstName'
-  | 'lastName'
-  | 'address'
-  | 'contactNumber';
-
 export type RegisterData = {
   email: string;
   password: string;
@@ -19,5 +10,19 @@ export type RegisterData = {
 
 export type LoginData = {
   email: string;
-  password: string; 
-}
+  password: string;
+};
+
+export type ShipmentData = {
+  recipientEmail: string;
+  recipientName: string;
+  recipientAddress: string;
+  recipientContactNumber: string;
+  serviceType: string;
+  goodType: string;
+  weight: number;
+  packagingType: string;
+  paymentMethod: string;
+};
+
+export type Role = 'ADMIN' | 'USER';

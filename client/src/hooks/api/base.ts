@@ -13,6 +13,7 @@ export const authApi = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 export const protectedApi = axios.create({
@@ -20,13 +21,16 @@ export const protectedApi = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 export const getJwtTokenFromCookie = () => {
+  console.log('document cookie:::', document.cookie);
   const cookieValue = document.cookie
     .split('; ')
-    .find((row) => row.startsWith('JwtToken='))
+    .find((row) => row.startsWith('jwtToken='))
     ?.split('=')[1];
+  console.log('cookieValue:::', cookieValue);
   return cookieValue;
 };
 
