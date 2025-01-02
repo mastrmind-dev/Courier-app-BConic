@@ -12,13 +12,12 @@ const sanitize = (req: Request, res: Response, next: NextFunction): void => {
     } else if (Array.isArray(input)) {
       return input.map(sanitizeInput) as RequestBody[];
     } else if (typeof input === 'object' && input !== null) {
-      // Recursively sanitize objects
       return Object.keys(input).reduce<Record<string, unknown>>((acc, key) => {
         acc[key] = sanitizeInput(input[key]);
         return acc;
       }, {});
     }
-    return input; // Return non-string, non-object, non-array values as they are
+    return input;
   };
 
   req.body = sanitizeInput(req.body);
@@ -34,7 +33,6 @@ export const sanitizeAndJSON = (req: Request, res: Response, next: NextFunction)
     } else if (Array.isArray(input)) {
       return input.map(sanitizeInput) as RequestBody[];
     } else if (typeof input === 'object' && input !== null) {
-      // Recursively sanitize objects
       return Object.keys(input).reduce<Record<string, unknown>>((acc, key) => {
         try {
           acc[key] = JSON.parse(sanitizeInput(input[key]) as string);
@@ -46,7 +44,7 @@ export const sanitizeAndJSON = (req: Request, res: Response, next: NextFunction)
         return acc;
       }, {});
     }
-    return input; // Return non-string, non-object, non-array values as they are
+    return input;
   };
 
   req.body = sanitizeInput(req.body);
