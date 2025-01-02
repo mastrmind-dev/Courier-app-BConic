@@ -32,7 +32,7 @@ export const authService = {
       }
 
       const userId = await userModel.create(
-        email,
+        formattedEmail,
         password,
         firstName,
         lastName,
@@ -54,6 +54,8 @@ export const authService = {
 
       const formattedEmail = email.toLowerCase().trim();
       const user = await userModel.getByEmail(formattedEmail);
+
+      console.log('formatted email:::', formattedEmail, 'user:::', user);
 
       if (!user) {
         throw new DetailedError(ERROR_MESSAGE.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND_RESPONSE_CODE);

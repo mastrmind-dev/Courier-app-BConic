@@ -3,13 +3,20 @@ import prisma from '../lib/prisma';
 import { ROLE } from '../data_structures/enums';
 
 const seed = async () => {
-  await prisma.user.delete({
+  const existingAdminUser = await prisma.user.findUnique({
     where: {
       email: 'admin@example.com',
     },
   });
 
-  console.log('Existing admin user deleted');
+  if (existingAdminUser) {
+    await prisma.user.delete({
+      where: {
+        email: 'admin@example.com',
+      },
+    });
+    console.log('Existing admin user deleted');
+  }
 
   const hashedPassword = await bcrypt.hash('admin123', 10);
 
