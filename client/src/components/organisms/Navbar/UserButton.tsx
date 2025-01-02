@@ -8,8 +8,9 @@ import { useNavigate } from 'react-router-dom';
 
 const UserButton = () => {
   const userStore = useUserStore();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { success, error } = useToast();
@@ -40,7 +41,11 @@ const UserButton = () => {
         success('Logged out successfully');
         setIsLoading(false);
 
-        navigate('/');
+        if (window.location.pathname === '/') {
+          window.location.reload();
+        } else {
+          navigate('/');
+        }
       },
       onError: (err) => {
         console.error('Error:', err);
@@ -68,22 +73,15 @@ const UserButton = () => {
         </div>
         {isOpen && (
           <div
-            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none w-[150px]"
             role="menu"
             aria-orientation="vertical"
             aria-labelledby="options-menu"
           >
             <div className="p1" role="none">
               <a
-                href="#"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
-                role="menuitem"
-              >
-                Update Profile
-              </a>
-              <a
                 href="/dashboard"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:rounded-t-md"
                 role="menuitem"
               >
                 Dashboard

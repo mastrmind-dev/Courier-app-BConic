@@ -3,13 +3,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 import {
   Form,
@@ -20,13 +13,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { createShipmentFormSchema } from '@/data_structures/schemas';
 import { createShipmentFormFields } from '@/data_structures/fields';
+import { IError } from '@/data_structures/interfaces';
+import { createShipmentFormSchema } from '@/data_structures/schemas';
 import { useCreateShipment, useGetShipmentsByUserId } from '@/hooks/api/shipment';
-import { useState } from 'react';
 import { useToast } from '@/providers/ToastProvider/ToastProvider';
 import { showResponseError } from '@/utils/errorUtils';
-import { IError } from '@/data_structures/interfaces';
+import { useState } from 'react';
 
 const CreateShipment = () => {
   const [loading, setLoading] = useState(false);
@@ -41,7 +34,7 @@ const CreateShipment = () => {
       recipientAddress: '',
       recipientEmail: '',
       weight: '',
-      serviceType: 'economy',
+      serviceType: 'standard',
       goodType: 'fragile',
       packagingType: 'box',
       paymentMethod: 'cash on delivery',
@@ -99,20 +92,16 @@ const CreateShipment = () => {
                           );
                         } else {
                           return (
-                            <Select onValueChange={formField.onChange}>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder={field.placeholder} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {field.inputValues?.map((value) => {
-                                  return (
-                                    <SelectItem value={value.toLowerCase()} key={value}>
-                                      {value}
-                                    </SelectItem>
-                                  );
-                                })}
-                              </SelectContent>
-                            </Select>
+                            <select
+                              className="w-full mt-2 text-black bg-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-600 p-1 shadow-sm h-9"
+                              {...formField}
+                            >
+                              {field.inputValues?.map((value) => (
+                                <option value={value.toLowerCase()} key={value}>
+                                  {value}
+                                </option>
+                              ))}
+                            </select>
                           );
                         }
                       })()}

@@ -89,9 +89,28 @@ export const createShipmentFormSchema = z.object({
     .max(50, {
       message: 'Recipient name must be less than 50 characters',
     }),
-  recipientContactNumber: z.string().max(20, {
-    message: 'Contact number must be less than 20 characters',
-  }),
+  recipientContactNumber: z
+    .string()
+    .min(7, {
+      message: 'Please enter a valid contact number',
+    })
+    .max(16, {
+      message: 'Contact number must be less than 16 characters',
+    })
+    .regex(/^\+?\d{7,15}$/, {
+      message: 'Please enter a valid contact number',
+    })
+    .refine(
+      (value) => {
+        if (value.startsWith('+')) {
+          return value.length <= 16 && value.length >= 7;
+        }
+        return value.length <= 15 && value.length >= 7;
+      },
+      {
+        message: 'Contact number must be less than 16 characters and more than 6 characters',
+      }
+    ),
   recipientAddress: z
     .string()
     .min(6, {
