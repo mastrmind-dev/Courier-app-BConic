@@ -12,7 +12,6 @@ const Dashboard = lazy(() => import('@/pages/Dashboard/DashboardPage'));
 const App = () => {
   return (
     <BrowserRouter>
-      {/* Suspense component is used to show a fallback spinner while pages are being lazy loaded */}
       <Suspense
         fallback={
           <div className="flex items-center justify-center h-[50vh] w-[100vw]">
@@ -21,17 +20,13 @@ const App = () => {
         }
       >
         <Routes>
-          {/* Authentication Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignupPage />} />
-          {/* ProtectedRoute component ensures that these routes are only accessible to authenticated users */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
 
-          {/* Fallback Route */}
-          {/* If no other routes match, the NotFoundPage component is displayed */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
