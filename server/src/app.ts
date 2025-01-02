@@ -10,6 +10,7 @@ import { config } from './config/config';
 import { swaggerSetup } from './lib/swagger';
 import authRouter from './routes/auth.router';
 import shipmentRouter from './routes/shipment.router';
+import rateLimiter from './middlewares/rateLimiter';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -30,6 +31,7 @@ app.use(
 );
 app.use(helmet());
 app.use(cookieParser());
+app.use(rateLimiter);
 
 app.use('/health', (req, res) => {
   res.send('OK');

@@ -5,15 +5,14 @@ import { HTTP_STATUS } from '../constants/httpStatus';
 import { DetailedError } from '../lib/detailedError';
 import { ERROR_RESPONSE } from '../lib/responseHandler';
 
-// Define rate limiter options
 const rateLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minutes
-  max: 250, // Limit each IP to 250 requests per windowMs
+  windowMs: 1000, // 1 second
+  max: 5,
   message: {
     message: 'Too many requests from this IP, please try again after few minutes.',
     status: 429,
   },
-  headers: true, // Add rate limit headers to the response
+  headers: true,
   handler: (req: Request, res: Response) => {
     const err = new DetailedError(
       'Too many requests from this IP',
@@ -23,5 +22,4 @@ const rateLimiter = rateLimit({
   },
 });
 
-// Export the rate limiter middleware for use in the app
 export default rateLimiter;
