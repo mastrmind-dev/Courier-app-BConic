@@ -39,6 +39,10 @@ export const useTrackShipment = () => {
   return useMutation((shipmentId: string) => protectedApi.get(`shipment/track/${shipmentId}`));
 };
 
+export const useGetShipmentHistory = () => {
+  return useMutation((shipmentId: string) => protectedApi.get(`shipment/history/${shipmentId}`));
+};
+
 export const useUpdateTrackingStatus = () => {
   return useMutation((updateTrackDetails: IUpdateTrackingStatus) =>
     protectedApi.patch(`shipment/tracking-status/${updateTrackDetails.shipmentId}`, {

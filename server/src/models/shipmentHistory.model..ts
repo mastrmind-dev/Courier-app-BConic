@@ -31,6 +31,9 @@ export const shipmentHistoryModel = {
       include: {
         shipment: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     return history;

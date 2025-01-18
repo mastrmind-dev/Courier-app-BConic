@@ -45,3 +45,12 @@ export interface IUpdateTrackingStatus {
   shipmentId: string;
   trackingStatus: string;
 }
+
+export interface IShipmentHistory {
+  id: string;
+  status: string;
+  metadata: Record<string, string>;
+  shipmentId: string;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -37,7 +37,7 @@ export const shipmentHistoryService = {
       ) {
         await shipmentHistoryModel.create(
           updateDetails.trackingStatus as string,
-          { metadata: 'metadata' },
+          { location: 'Union Place, Colombo', deliveryMan: 'Sapthaka' }, // This should be filled by admin from the front end. Currently no UI for this.
           shipmentId
         );
       }
