@@ -42,9 +42,23 @@ model Shipment {
   paymentMethod          String
   trackingStatus         String @default("PENDING")
 
+  ShipmentStatusHistory ShipmentStatusHistory[]
+
   senderId String
   sender   User   @relation(fields: [senderId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ShipmentStatusHistory {
+  id        String   @id @default(uuid())
+  status    String
+  metadata  Json?
+  timestamp DateTime @default(now())
+
+  shipmentId String
+  shipment   Shipment @relation(fields: [shipmentId], references: [id])
+
+  createdAt DateTime @default(now())
 }

@@ -28,7 +28,7 @@ export const shipmentController = {
         res,
         HTTP_STATUS.SUCCESS_RESPONSE_CODE,
         { shipment },
-        SUCCESS_MESSAGE.SHIPMENT_CREATED
+        SUCCESS_MESSAGE.SHIPMENT_UPDATED
       );
     } catch (error) {
       return ERROR_RESPONSE(res, error);
@@ -37,7 +37,11 @@ export const shipmentController = {
 
   track: async (req: Request, res: Response): Promise<void> => {
     try {
-      const trackingDetails = await shipmentService.track(req.params.shipmentId, req.user.id, req.user.role);
+      const trackingDetails = await shipmentService.track(
+        req.params.shipmentId,
+        req.user.id,
+        req.user.role
+      );
 
       return SUCCESS_RESPONSE(
         res,

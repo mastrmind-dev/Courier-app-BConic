@@ -47,6 +47,7 @@ export const shipmentModel = {
   getById: async (
     shipmentId: string
   ): Promise<(IShipmentDetails & { sender: IUserDetails }) | null> => {
+    console.log('getbyid:::', shipmentId);
     const shipment = await prisma.shipment.findUnique({
       where: {
         id: shipmentId,

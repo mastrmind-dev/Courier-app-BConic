@@ -6,6 +6,7 @@ import { CommonType } from '../data_structures/types';
 import { DetailedError } from '../lib/detailedError';
 import { shipmentModel } from '../models/shipment.model';
 import { userModel } from '../models/user.model';
+import { shipmentHistoryService } from './shipmentHistory.service';
 
 export const shipmentService = {
   create: async (
@@ -38,6 +39,8 @@ export const shipmentService = {
       if (!updater) {
         throw new DetailedError(ERROR_MESSAGE.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND_RESPONSE_CODE);
       }
+
+      await shipmentHistoryService.create(shipmentId, updateDetails, userId);
 
       const shipment = await shipmentModel.update(shipmentId, updateDetails);
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { shipmentController } from '../controllers/shipment.controller';
+import { shipmentHistoryController } from '../controllers/shipmentHistory.controller';
 import { shipment, trackingStatus } from '../lib/joi';
 import { isAdmin, isLoggedIn } from '../middlewares/auth';
 import formData from '../middlewares/formData';
@@ -288,10 +289,79 @@ router.patch(
  *                 error:
  *                   type: string
  */
+router.get('/track/:shipmentId', [formData, sanitize, isLoggedIn], shipmentController.track);
+
+/**
+ * @swagger
+ * /api/v1/shipment/history/{shipmentId}:
+ *   get:
+ *     summary: Shipment tracking
+ *     tags:
+ *       - Shipment endpoints
+ *     requestBody:
+ *       required: false
+ *     parameters:
+ *       - in: path
+ *         name: shipmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: "202b18ee-e8f0-4151-8cfc-be456bc30f02"
+ *         description: The tracking number of the shipment
+ *     responses:
+ *       200:
+ *         description: Shipment history fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                   metadata:
+ *                     type: object
+ *                   timestamp:
+ *                     type: string
+ *                   shipmentId:
+ *                     type: string
+ *                   shipment:
+ *                     type: object
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       404:
+ *         description: Shipment not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 router.get(
-  '/track/:shipmentId',
+  '/history/:shipmentId',
   [formData, sanitize, isLoggedIn],
-  shipmentController.track
+  shipmentHistoryController.getHistoryByShipmentId
 );
 
 /**
@@ -361,11 +431,7 @@ router.get(
  *                 error:
  *                   type: string
  */
-router.get(
-  '/by-user',
-  [formData, sanitize, isLoggedIn],
-  shipmentController.getByUserId
-);
+router.get('/by-user', [formData, sanitize, isLoggedIn], shipmentController.getByUserId);
 
 /**
  * @swagger
@@ -434,10 +500,6 @@ router.get(
  *                 error:
  *                   type: string
  */
-router.get(
-  '/all',
-  [formData, sanitize, isLoggedIn, isAdmin],
-  shipmentController.getAll
-);
+router.get('/all', [formData, sanitize, isLoggedIn, isAdmin], shipmentController.getAll);
 
 export default router;
